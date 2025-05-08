@@ -9,7 +9,6 @@ target_link_libraries(my-opt
     CustomMLIRPasses
     MLIRParser
     MLIRIR
-    MLIRLLVMIR
     MLIRPass
     MLIRSupport
     MLIRTransforms

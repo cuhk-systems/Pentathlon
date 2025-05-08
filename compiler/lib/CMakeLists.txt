@@ -6,7 +6,6 @@ add_mlir_library(CustomMLIRPasses
 
   LINK_LIBS PUBLIC
   MLIRIR
-  MLIRLLVMIR
   MLIRPass
   MLIRSupport
 )
@@ -18,7 +17,6 @@ target_include_directories(CustomMLIRPasses
 target_link_libraries(CustomMLIRPasses
   PUBLIC
     MLIRIR
-    MLIRLLVMIR
     MLIRPass
     MLIRSupport
 )
