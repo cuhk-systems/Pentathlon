@@ -20,11 +20,11 @@ struct LocalAddrPass : public PassWrapper<LocalAddrPass, OperationPass<ModuleOp>
         if (auto loadOp = dyn_cast<LLVM::LoadOp>(op)) {
           Value ptr = loadOp.getAddr();
           Value newPtr = insertGetLocalAddrCall(builder, op, getLocalAddrFunc, ptr);
-          loadOp.setOperand(0, newPtr);
+          loadOp.setAddr(newPtr);
         } else if (auto storeOp = dyn_cast<LLVM::StoreOp>(op)) {
           Value ptr = storeOp.getAddr();
           Value newPtr = insertGetLocalAddrCall(builder, op, getLocalAddrFunc, ptr);
-          storeOp.setOperand(1, newPtr);
+          storeOp.setAddr(newPtr);
         } else if (auto callOp = dyn_cast<LLVM::CallOp>(op)) {
           SmallVector<Value, 4> newOperands;
           for (Value arg : callOp.getOperands()) {
@@ -46,7 +46,7 @@ struct LocalAddrPass : public PassWrapper<LocalAddrPass, OperationPass<ModuleOp>
                                 Value ptr) {
     builder.setInsertionPoint(op);
     auto call = builder.create<LLVM::CallOp>(op->getLoc(), func, ValueRange{ptr});
-    return call.getResult(0);
+    return call.getResult();
   }
 
   LLVM::LLVMFuncOp ensureGetLocalAddrFunc(ModuleOp module) {

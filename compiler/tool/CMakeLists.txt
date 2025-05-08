@@ -13,6 +13,7 @@ target_link_libraries(my-opt
     MLIRSupport
     MLIRNoisy
     MLIROptLib
+    MLIRTools
     MLIRTransforms
 )
 

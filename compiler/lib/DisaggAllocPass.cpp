@@ -24,7 +24,7 @@ struct DisaggAllocPass : public PassWrapper<DisaggAllocPass, OperationPass<Modul
       auto newCall = builder.create<LLVM::CallOp>(
           callOp.getLoc(), disaggAllocFunc, ValueRange{mallocSize});
 
-      callOp.replaceAllUsesWith(newCall.getResult(0));
+      callOp.replaceAllUsesWith(newCall.getResult());
       callOp.erase();
     });
   }

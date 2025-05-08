@@ -2,7 +2,7 @@
 #include "mlir/IR/BuiltinDialect.h"
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/Support/LogicalResult.h"
-#include "mlir/include/mlir/Tools/mlir-opt/MlirOptMain.h"
+#include "mlir/Tools/mlir-opt/MlirOptMain.h"
 #include "mlir/Parser/Parser.h"
 #include "mlir/Pass/PassManager.h"
 #include "mlir/Transforms/Passes.h"
