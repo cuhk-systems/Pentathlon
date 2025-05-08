@@ -25,8 +25,8 @@ struct AllocatePass : public PassWrapper<AllocatePass, OperationPass<ModuleOp>> 
           callOp.getLoc(), disaggAllocFunc, ValueRange{mallocSize});
 
       // Replace all uses of malloc result with new call result
-      if (callOp->getNumResults() == 1) {
-        callOp->getResult().replaceAllUsesWith(newCall.getResult());
+      if (callOp.getNumResults() == 1) {
+        callOp.getResult().replaceAllUsesWith(newCall.getResult());
       }
 
       // Remove original malloc call
