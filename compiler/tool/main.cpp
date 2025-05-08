@@ -34,5 +34,5 @@ int main(int argc, char **argv) {
     return createAddrDepPass();
   });
 
-  return mlir::MlirOptMain(argc, argv, "My Custom MLIR Opt Tool\n", registry);
+  return mlir::asMainReturnCode(mlir::MlirOptMain(argc, argv, "My Custom MLIR Opt Tool\n", registry));
 }
