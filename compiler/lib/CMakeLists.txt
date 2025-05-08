@@ -1,6 +1,6 @@
 add_mlir_library(CustomMLIRPasses
   LocalAddrPass.cpp
-  AllocatePass.cpp
+  DisaggAllocPass.cpp
   DisaggFreePass.cpp
   AddrDepPass.cpp
 
