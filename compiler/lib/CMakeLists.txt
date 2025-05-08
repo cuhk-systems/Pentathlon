@@ -1,3 +1,5 @@
+add_llvm_executable(my-opt main.cpp)
+
 add_mlir_library(CustomMLIRPasses
   LocalAddrPass.cpp
   DisaggAllocPass.cpp
@@ -10,8 +12,6 @@ add_mlir_library(CustomMLIRPasses
   MLIRPass
   MLIRSupport
 )
-
-add_llvm_executable(my-opt main.cpp)
 
 target_link_libraries(my-opt
   PRIVATE
