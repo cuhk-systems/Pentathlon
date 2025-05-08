@@ -1,17 +1,20 @@
-get_property(dialect_libs GLOBAL PROPERTY MLIR_DIALECT_LIBS)
-get_property(conversion_libs GLOBAL PROPERTY MLIR_CONVERSION_LIBS)
+add_executable(my-opt MyOptMain.cpp)
 
-add_llvm_executable(my-opt main.cpp)
+target_include_directories(my-opt
+  PRIVATE ${PROJECT_SOURCE_DIR}/include
+)
 
 target_link_libraries(my-opt
   PRIVATE
-  CustomMLIRPasses
-  MLIRParser
-  MLIRIR
-  MLIRLLVMIR
-  MLIRSupport
-  MLIRPass
-  MLIRTransforms
+    CustomMLIRPasses
+    MLIRParser
+    MLIRIR
+    MLIRLLVMIR
+    MLIRPass
+    MLIRSupport
+    MLIRTransforms
 )
 
-mlir_check_all_link_libraries(tutorial-opt)
+set_target_properties(my-opt PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)

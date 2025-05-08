@@ -10,3 +10,15 @@ add_mlir_library(CustomMLIRPasses
   MLIRPass
   MLIRSupport
 )
+
+target_include_directories(CustomMLIRPasses
+  PUBLIC ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(CustomMLIRPasses
+  PUBLIC
+    MLIRIR
+    MLIRLLVMIR
+    MLIRPass
+    MLIRSupport
+)
