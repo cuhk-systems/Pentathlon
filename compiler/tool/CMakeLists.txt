@@ -1,4 +1,4 @@
-add_executable(my-opt MyOptMain.cpp)
+add_executable(my-opt main.cpp)
 
 target_include_directories(my-opt
   PRIVATE ${PROJECT_SOURCE_DIR}/include
