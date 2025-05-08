@@ -1,5 +1,4 @@
 #include "DisaggAllocPass.h"
-
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/Pass/Pass.h"
@@ -8,7 +7,7 @@
 using namespace mlir;
 
 namespace {
-struct DisaggAllocPass : public PassWrapper<DisaggAllocPass, OperationPass<ModuleOp>> {
+struct AllocatePass : public PassWrapper<AllocatePass, OperationPass<ModuleOp>> {
   void runOnOperation() override {
     ModuleOp module = getOperation();
     LLVM::LLVMFuncOp disaggAllocFunc = ensureDisaggAllocFunc(module);
@@ -18,13 +17,19 @@ struct DisaggAllocPass : public PassWrapper<DisaggAllocPass, OperationPass<Modul
       if (!callee || *callee != "malloc")
         return;
 
-      // Expecting malloc(size_t), i.e., i64
+      // Assume malloc takes i64 and returns !llvm.ptr<i8>
       Value mallocSize = callOp.getOperand(0);
+
       OpBuilder builder(callOp);
       auto newCall = builder.create<LLVM::CallOp>(
           callOp.getLoc(), disaggAllocFunc, ValueRange{mallocSize});
 
-      callOp.replaceAllUsesWith(newCall.getResult());
+      // Replace all uses of malloc result with new call result
+      if (callOp->getNumResults() == 1) {
+        callOp->getResult(0).replaceAllUsesWith(newCall.getResult(0));
+      }
+
+      // Remove original malloc call
       callOp.erase();
     });
   }
@@ -45,14 +50,13 @@ struct DisaggAllocPass : public PassWrapper<DisaggAllocPass, OperationPass<Modul
 
   StringRef getArgument() const final { return "allocate-pass"; }
   StringRef getDescription() const final {
-    return "Replace malloc calls with disagg_alloc.";
+    return "Replace malloc calls with disagg_alloc(size).";
   }
 };
 } // end anonymous namespace
 
-std::unique_ptr<Pass> createDisaggAllocPass() {
-  return std::make_unique<DisaggAllocPass>();
+std::unique_ptr<Pass> createAllocatePass() {
+  return std::make_unique<AllocatePass>();
 }
 
-/// Register the pass
-static PassRegistration<DisaggAllocPass> pass;
+static PassRegistration<AllocatePass> pass;
