@@ -11,7 +11,7 @@ add_mlir_library(CustomMLIRPasses
   MLIRSupport
 )
 
-add_executable(my-opt MyOptMain.cpp)
+add_executable(my-opt main.cpp)
 
 target_link_libraries(my-opt
   PRIVATE
