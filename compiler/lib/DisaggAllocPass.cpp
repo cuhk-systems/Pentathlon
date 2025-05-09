@@ -7,7 +7,7 @@
 using namespace mlir;
 
 namespace {
-struct AllocatePass : public PassWrapper<AllocatePass, OperationPass<ModuleOp>> {
+struct DisaggAllocPass : public PassWrapper<DisaggAllocPass, OperationPass<ModuleOp>> {
   void runOnOperation() override {
     ModuleOp module = getOperation();
     LLVM::LLVMFuncOp disaggAllocFunc = ensureDisaggAllocFunc(module);
@@ -48,15 +48,15 @@ struct AllocatePass : public PassWrapper<AllocatePass, OperationPass<ModuleOp>> 
         module.getLoc(), "disagg_alloc", funcTy);
   }
 
-  StringRef getArgument() const final { return "allocate-pass"; }
+  StringRef getArgument() const final { return "disagg-alloc-pass"; }
   StringRef getDescription() const final {
     return "Replace malloc calls with disagg_alloc(size).";
   }
 };
 } // end anonymous namespace
 
-std::unique_ptr<Pass> createAllocatePass() {
-  return std::make_unique<AllocatePass>();
+std::unique_ptr<Pass> createDisaggAllocPass() {
+  return std::make_unique<DisaggAllocPass>();
 }
 
-static PassRegistration<AllocatePass> pass;
+static PassRegistration<DisaggAllocPass> pass;
