@@ -1,0 +1,71 @@
+cmake_minimum_required(VERSION 3.20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+project(dm_compiler)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+
+option(PENTATHLON_USE_CXL "Use CXL NUMA memory for compute_new instead of RDMA" OFF)
+if (PENTATHLON_USE_CXL)
+  set(PENTATHLON_USE_COMPUTE_NEW ON CACHE BOOL "Build runtime/compute_new instead of runtime/compute" FORCE)
+else ()
+  find_package(rdmacm REQUIRED)
+  find_package(ibverbs REQUIRED)
+endif ()
+find_package(Threads REQUIRED)
+if (PENTATHLON_USE_CXL)
+  find_package(TBB QUIET)
+else ()
+  find_package(TBB REQUIRED)
+endif ()
+# find_package(Numa REQUIRED)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -march=native")
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  message("-- Debug mode, sanitizers enabled")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  # close flto
+  # string(REPLACE "-flto" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+elseif (${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
+  string(REPLACE "-O2" "-O3" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+elseif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  message("-- Release mode, all optimization enabled")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+  find_package(PkgConfig REQUIRED)
+  pkg_search_module(JEMALLOC jemalloc)
+  if (JEMALLOC_FOUND)
+    include_directories(${JEMALLOC_INCLUDE_DIRS})
+    link_libraries(${JEMALLOC_LIBRARIES})
+  else ()
+    message(WARNING "jemalloc not found; building with the system allocator")
+  endif ()
+endif ()
+
+
+find_program(PENTATHLON_CLANG clang)
+find_program(PENTATHLON_CLANGXX clang++)
+if (PENTATHLON_CLANG AND PENTATHLON_CLANGXX)
+  set(CMAKE_C_COMPILER clang)
+  set(CMAKE_CXX_COMPILER clang++)
+endif ()
+
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(./) # for `common`
+
+option(PENTATHLON_USE_COMPUTE_NEW "Build runtime/compute_new instead of runtime/compute" OFF)
+if (PENTATHLON_USE_COMPUTE_NEW)
+  message(STATUS "Using runtime/compute_new")
+  add_subdirectory(compute_new)
+else ()
+  add_subdirectory(compute)
+endif ()
+if (NOT PENTATHLON_USE_CXL)
+  add_subdirectory(memory)
+endif ()
